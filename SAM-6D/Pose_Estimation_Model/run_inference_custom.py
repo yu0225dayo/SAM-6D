@@ -99,12 +99,12 @@ rgb_transform = transforms.Compose([transforms.ToTensor(),
                                 transforms.Normalize(mean=[0.485, 0.456, 0.406],
                                                     std=[0.229, 0.224, 0.225])])
 
-def visualize(rgb, pred_rot, pred_trans, model_points, K, save_path):
-    img = draw_detections(rgb, pred_rot, pred_trans, model_points, K, color=(255, 0, 0))
+def visualize(rgb, pred_rot, pred_trans, model_points, K, save_path, with_axes=True):
+    img = draw_detections(rgb, pred_rot, pred_trans, model_points, K, color=(255, 0, 0), with_axes=with_axes)
     img = Image.fromarray(np.uint8(img))
     img.save(save_path)
     prediction = Image.open(save_path)
-    
+
     # concat side by side in PIL
     rgb = Image.fromarray(np.uint8(rgb))
     img = np.array(img)
@@ -281,7 +281,8 @@ if __name__ == "__main__":
         cfg.det_score_thresh, cfg.test_dataset
     )
     ninstance = input_data['pts'].size(0)
-    
+    print(f"=> ISM candidates: {ninstance} (det_score_thresh={cfg.det_score_thresh})")
+
     print("=> running model ...")
     with torch.no_grad():
         input_data['dense_po'] = all_tem_pts.repeat(ninstance,1,1)
@@ -307,9 +308,14 @@ if __name__ == "__main__":
         json.dump(detections, f)
 
     print("=> visualizating ...")
-    save_path = os.path.join(f"{cfg.output_dir}/sam6d_results", 'vis_pem.png')
     valid_masks = pose_scores == pose_scores.max()
     K = input_data['K'].detach().cpu().numpy()[valid_masks]
-    vis_img = visualize(img, pred_rot[valid_masks], pred_trans[valid_masks], model_points*1000, K, save_path)
+
+    save_path = os.path.join(f"{cfg.output_dir}/sam6d_results", 'vis_pem.png')
+    vis_img = visualize(img, pred_rot[valid_masks], pred_trans[valid_masks], model_points*1000, K, save_path, with_axes=False)
     vis_img.save(save_path)
+
+    save_path_axes = os.path.join(f"{cfg.output_dir}/sam6d_results", 'vis_pem_axes.png')
+    vis_img_axes = visualize(img, pred_rot[valid_masks], pred_trans[valid_masks], model_points*1000, K, save_path_axes, with_axes=True)
+    vis_img_axes.save(save_path_axes)
 
