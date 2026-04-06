@@ -10,7 +10,7 @@ SAM6D_DIR="$(cd "$(dirname "$0")" && pwd)"
 
 # MESH="obj_000005" を指定するとCADモデル、"object_seed42_mesh" でSAM-3D生成メッシュ
 MESH="obj_000005"  # 例: "obj_000005" または "object_seed42_mesh"
-# MESH="object_seed42_mesh"
+MESH="object_seed42_mesh"
 
 if [ "$MESH" = "obj_000005" ]; then
     OUTPUT_DIR="/workspace/tmp/obj_000005_templates"
