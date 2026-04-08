@@ -100,9 +100,9 @@ def render_pointcloud_templates(pcd_path, output_dir, num_views=42, splat_r=2):
 
     cam_poses = np.load(CAM_POSES_PATH)  # (42,4,4) camera-to-world, OpenCV convention
 
-    # カメラ距離 = half_extent × 5 (物体が画像の ~30% を占める)
-    half_ext  = max_ext / 2.0
-    view_dist = 5.0 * half_ext
+    # カメラ距離 = スケール後半径 × 5 (物体が画像の ~30% を占める)
+    # pts_c は常に 200mm にスケール済みなので view_dist は mm 基準で固定
+    view_dist = 5.0 * 100.0  # 500mm
 
     # 内部パラメータ: 垂直FOV 60° (half=30°)
     fov_half_deg = 30.0
