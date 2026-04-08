@@ -1,0 +1,12 @@
+# Output files
+**/*.json
+**/*.npz
+**/outputs/
+**/outputs2/
+
+# Python cache
+**/__pycache__/
+**/*.pyc
+
+# Model checkpoints
+**/checkpoints/
