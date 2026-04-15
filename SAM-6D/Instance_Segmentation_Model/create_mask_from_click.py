@@ -38,11 +38,19 @@ def create_detection_from_click(rgb_path, click_x, click_y, output_dir):
         point_labels=np.array([1]),
         multimask_output=True,
     )
-    # 最高スコアのマスクを使用
-    best_idx = int(np.argmax(scores))
+    # mask index 1 (中マスク) を使用
+    best_idx = 1
     mask = masks[best_idx]  # (H, W) bool
     score = float(scores[best_idx])
     print(f"[SAM] マスク面積: {mask.sum()}px  スコア: {score:.3f}")
+
+    # 3枚のマスクをすべて保存
+    import cv2 as _cv2
+    os.makedirs(f"{output_dir}/sam6d_results", exist_ok=True)
+    for i in range(3):
+        mask_save_path = f"{output_dir}/sam6d_results/mask_{i+1}.png"
+        _cv2.imwrite(mask_save_path, (masks[i].astype(np.uint8) * 255))
+        print(f"[SAM] mask_{i+1}.png 保存: score={scores[i]:.3f} → {mask_save_path}")
 
     # bbox (x, y, w, h)
     ys, xs = np.where(mask)
