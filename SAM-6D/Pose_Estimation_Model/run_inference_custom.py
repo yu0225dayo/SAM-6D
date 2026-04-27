@@ -316,6 +316,10 @@ if __name__ == "__main__":
     vis_img.save(save_path)
 
     save_path_axes = os.path.join(f"{cfg.output_dir}/sam6d_results", 'vis_pem_axes.png')
-    vis_img_axes = visualize(img, pred_rot[valid_masks], pred_trans[valid_masks], model_points*1000, K, save_path_axes, with_axes=True)
+    # Y 軸を上向きに補正（PEM は Y 下向きで出力するため X 軸周り 180° 回転）
+    _R_corr = np.diag([1.0, -1.0, -1.0]).astype(np.float32)
+    pred_rot_vis = pred_rot[valid_masks] @ _R_corr
+    model_points_vis = (model_points * 1000) @ _R_corr
+    vis_img_axes = visualize(img, pred_rot_vis, pred_trans[valid_masks], model_points_vis, K, save_path_axes, with_axes=True)
     vis_img_axes.save(save_path_axes)
 
